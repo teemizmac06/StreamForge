@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>StreamForge — Premium Streaming Growth Community</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --p:#7c3aed;--pl:#a78bfa;--pd:#4c1d95;
+  --b:#2563eb;--c:#06b6d4;--cl:#67e8f9;
+  --bg:#06061a;--bg2:#0c0c22;
+  --card:#ffffff07;--cb:#ffffff14;
+  --t:#f1f5f9;--t2:#94a3b8;--t3:#475569;
+  --glass-bg:rgba(255,255,255,0.06);
+  --glass-border:rgba(255,255,255,0.12);
+  --glass-blur:20px;
+  --grain-opacity:0.04;
+  --toggle-bg:#1e1e3a;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t);font-family:'DM Sans',sans-serif;overflow-x:hidden;transition:background .4s,color .4s}
+
+/* LIGHT MODE */
+body.light{
+  --bg:#f0eff8;--bg2:#e8e6f5;
+  --card:rgba(255,255,255,0.7);--cb:rgba(100,80,200,0.15);
+  --t:#1a1040;--t2:#4a3d7a;--t3:#7a6fa0;
+  --glass-bg:rgba(255,255,255,0.55);
+  --glass-border:rgba(180,160,255,0.3);
+  --toggle-bg:#d4cfee;
+}
+
+/* GRAINY FILM BACKGROUND */
+.grain-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  opacity:var(--grain-opacity);mix-blend-mode:overlay}
+.bgfx{position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 10%,#7c3aed30,transparent 55%),
+    radial-gradient(ellipse 60% 80% at 90% 90%,#2563eb28,transparent 55%),
+    radial-gradient(ellipse 50% 50% at 50% 50%,#06b6d415,transparent 65%),
+    var(--bg)}
+body.light .bgfx{
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 10%,#a78bfa28,transparent 55%),
+    radial-gradient(ellipse 60% 80% at 90% 90%,#60a5fa22,transparent 55%),
+    var(--bg)}
+
+/* MACROS LIQUID GLASS MIXIN */
+.glass{
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  border-radius:16px;
+  backdrop-filter:blur(var(--glass-blur)) saturate(1.8);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(1.8);
+  transition:all .3s;
+  position:relative;overflow:hidden}
+.glass::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.08) 0%,transparent 50%);
+  pointer-events:none;border-radius:inherit}
+.glass:hover{
+  border-color:rgba(167,139,250,0.4);
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px rgba(124,58,237,0.18)}
+
+/* INTRO / SLIDE UP */
+#intro{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:var(--bg);overflow:hidden;transition:transform .8s cubic-bezier(0.76,0,0.24,1)}
+#intro.dismissed{transform:translateY(-100%);pointer-events:none}
+.intro-bg{position:absolute;inset:0;
+  background:radial-gradient(ellipse 70% 70% at 50% 50%,#7c3aed22,transparent 70%)}
+.intro-grain{position:absolute;inset:0;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.intro-logo{font-family:'Syne',sans-serif;font-size:clamp(2.5rem,8vw,5rem);font-weight:800;letter-spacing:-2px;
+  background:linear-gradient(135deg,#f1f5f9,#a78bfa 50%,#67e8f9);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:introFade 1s ease forwards;opacity:0}
+.intro-sub{font-size:clamp(.9rem,2vw,1.1rem);color:var(--t2);margin-top:.75rem;
+  animation:introFade 1s .3s ease forwards;opacity:0}
+.intro-bar{width:200px;height:2px;background:#ffffff15;border-radius:2px;margin-top:2rem;overflow:hidden;
+  animation:introFade 1s .5s ease forwards;opacity:0}
+.intro-fill{height:100%;background:linear-gradient(90deg,var(--p),var(--c));border-radius:2px;
+  animation:introLoad 2s .8s ease forwards;width:0}
+.swipe-up-hint{position:absolute;bottom:2.5rem;display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  animation:introFade 1s 1.2s ease forwards,swipeBounce 1.5s 2s infinite;opacity:0;cursor:pointer}
+.swipe-chevron{width:28px;height:28px;border-right:2.5px solid var(--pl);border-top:2.5px solid var(--pl);
+  transform:rotate(-45deg);margin-bottom:-12px}
+.swipe-chevron2{width:28px;height:28px;border-right:2.5px solid rgba(167,139,250,.4);border-top:2.5px solid rgba(167,139,250,.4);
+  transform:rotate(-45deg)}
+.swipe-label{font-size:.75rem;font-weight:600;color:var(--t2);letter-spacing:2px;text-transform:uppercase;margin-top:.5rem}
+@keyframes introFade{to{opacity:1}}
+@keyframes introLoad{to{width:100%}}
+@keyframes swipeBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* TOGGLE */
+.theme-toggle{display:flex;align-items:center;gap:.5rem;cursor:pointer}
+.toggle-track{width:56px;height:28px;border-radius:14px;background:var(--toggle-bg);
+  border:1px solid var(--glass-border);position:relative;transition:all .4s;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,#a78bfa,#67e8f9);
+  transition:transform .4s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:0 2px 8px rgba(124,58,237,.4);
+  display:flex;align-items:center;justify-content:center;font-size:11px}
+body.light .toggle-thumb{transform:translateX(28px);background:linear-gradient(135deg,#f59e0b,#ef4444)}
+.toggle-label{font-size:.72rem;font-weight:600;color:var(--t2);min-width:28px}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:.875rem 2rem;
+  position:sticky;top:0;z-index:200;
+  background:rgba(6,6,26,0.7);
+  border-bottom:1px solid var(--glass-border);
+  backdrop-filter:blur(24px) saturate(1.8);
+  -webkit-backdrop-filter:blur(24px) saturate(1.8)}
+body.light nav{background:rgba(240,239,248,0.7)}
+.logo{display:flex;align-items:center;gap:.5rem;font-family:'Syne',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:-.5px;text-decoration:none;color:var(--t)}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,#7c3aed,#06b6d4);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:13px;font-weight:900;color:#fff;
+  box-shadow:0 0 18px #7c3aed66}
+.nav-links{display:flex;gap:1.25rem;list-style:none}
+.nav-links a{color:var(--t2);text-decoration:none;font-size:.82rem;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--pl)}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+
+/* BUTTONS */
+.btn{padding:.45rem .95rem;border-radius:8px;font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;border:none;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem;font-family:'DM Sans',sans-serif}
+.btn-primary{background:linear-gradient(135deg,var(--p),var(--b));color:#fff;box-shadow:0 0 18px #7c3aed44}
+.btn-primary:hover{box-shadow:0 0 30px #7c3aed88;transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--pl);border:1px solid var(--p)}
+.btn-outline:hover{background:#7c3aed1a}
+.btn-discord{background:linear-gradient(135deg,#5865f2,#4752c4);color:#fff}
+.btn-discord:hover{transform:translateY(-1px)}
+.btn-twitch{background:linear-gradient(135deg,#9147ff,#6441a5);color:#fff}
+.btn-lg{padding:.8rem 2rem;font-size:.95rem;border-radius:10px}
+
+/* SECTIONS */
+section{padding:4rem 2rem;max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.sh{text-align:center;margin-bottom:2.5rem}
+.stag{display:inline-block;background:#7c3aed1a;border:1px solid #7c3aed44;color:var(--pl);
+  padding:.25rem .75rem;border-radius:20px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.6rem}
+h2{font-family:'Syne',sans-serif;font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;
+  background:linear-gradient(135deg,var(--t),#a78bfa 60%,#67e8f9);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.4rem}
+.ssub{color:var(--t2);font-size:.95rem}
+
+/* HERO */
+.hero{text-align:center;padding:5rem 2rem 4rem;max-width:900px;margin:0 auto;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--glass-bg);border:1px solid var(--glass-border);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  color:var(--pl);padding:.35rem .875rem;border-radius:20px;font-size:.78rem;font-weight:700;margin-bottom:1.25rem}
+.ldot{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:lpulse 1.5s infinite}
+@keyframes lpulse{0%,100%{box-shadow:0 0 0 0 #22c55e88}50%{box-shadow:0 0 0 6px transparent}}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5.5vw,3.8rem);font-weight:800;line-height:1.08;margin-bottom:1rem;
+  background:linear-gradient(135deg,var(--t) 0%,#a78bfa 50%,#67e8f9 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1rem;color:var(--t2);max-width:600px;margin:0 auto 2rem;line-height:1.75}
+.hero-btns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem}
+.hstats{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap}
+.hs-num{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;
+  background:linear-gradient(135deg,var(--pl),var(--cl));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hs-label{font-size:.72rem;color:var(--t3)}
+
+/* GROWTH DASHBOARD */
+.dashboard{
+  background:var(--glass-bg);
+  border:1px solid var(--glass-border);
+  border-radius:24px;
+  backdrop-filter:blur(30px) saturate(1.8);
+  -webkit-backdrop-filter:blur(30px) saturate(1.8);
+  padding:2rem;max-width:600px;margin:0 auto;position:relative;overflow:hidden}
+.dashboard::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(124,58,237,0.08),rgba(6,182,212,0.05));pointer-events:none}
+.dashboard-title{display:flex;align-items:center;gap:.5rem;font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1.5rem;color:var(--t)}
+.bar-row{margin-bottom:1.1rem}
+.bar-label{display:flex;justify-content:space-between;margin-bottom:.35rem;font-size:.78rem}
+.bar-name{color:var(--t2)}
+.bar-pct{font-weight:700;color:#f59e0b}
+.bar-track{height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 1.5s cubic-bezier(0.22,1,0.36,1)}
+.bar-purple{background:linear-gradient(90deg,#7c3aed,#06b6d4)}
+.bar-gold{background:linear-gradient(90deg,#f59e0b,#f97316)}
+.bar-teal{background:linear-gradient(90deg,#06b6d4,#a78bfa)}
+.dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:1.5rem}
+.dstat{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px;padding:.875rem;text-align:center}
+.dstat-num{font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800;color:#f59e0b}
+.dstat-label{font-size:.65rem;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:.15rem}
+
+/* ACHIEVEMENT WALL */
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem}
+.ach-card{padding:1.25rem}
+.ach-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.875rem}
+.ach-av{width:46px;height:46px;border-radius:50%;border:2px solid var(--glass-border);object-fit:cover;background:#1a1a3e;flex-shrink:0}
+.ach-info h4{font-size:.875rem;font-weight:700;color:var(--t);margin-bottom:.15rem}
+.ach-info p{font-size:.72rem;color:var(--t2)}
+.ach-badge{display:inline-flex;align-items:center;gap:.3rem;padding:.2rem .6rem;border-radius:6px;font-size:.68rem;font-weight:800;margin-bottom:.6rem}
+.ach-partner{background:linear-gradient(135deg,#7c3aed22,#2563eb22);color:#a78bfa;border:1px solid #7c3aed44}
+.ach-affiliate{background:#22c55e18;color:#22c55e;border:1px solid #22c55e44}
+.ach-topcat{background:#f59e0b18;color:#f59e0b;border:1px solid #f59e0b44}
+.ach-income{background:#ec489918;color:#ec4899;border:1px solid #ec489944}
+.ach-days{font-size:.72rem;color:var(--t3);margin-bottom:.4rem}
+.ach-quote{font-size:.8rem;color:var(--t2);line-height:1.55;font-style:italic}
+
+/* GOAL SECTION */
+.goal-section{background:var(--glass-bg);border:1px solid var(--glass-border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:24px;padding:3rem 2rem;text-align:center;max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.goals-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:.875rem;margin-bottom:2rem}
+.goal-card{padding:1.1rem;border-radius:14px;border:1px solid var(--glass-border);
+  background:rgba(255,255,255,0.03);cursor:pointer;transition:all .25s;text-align:left;position:relative}
+.goal-card.sel{border-color:rgba(124,58,237,.6);background:rgba(124,58,237,0.12);
+  box-shadow:0 0 24px rgba(124,58,237,.2)}
+.goal-card:hover:not(.sel){border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.06)}
+.goal-sel-badge{display:none;position:absolute;top:.5rem;right:.5rem;
+  background:#7c3aed;color:#fff;border-radius:50%;width:18px;height:18px;
+  font-size:.6rem;align-items:center;justify-content:center;font-weight:900}
+.goal-card.sel .goal-sel-badge{display:flex}
+.goal-icon{font-size:1.4rem;margin-bottom:.5rem}
+.goal-title{font-size:.85rem;font-weight:700;margin-bottom:.2rem;color:var(--t)}
+.goal-desc{font-size:.73rem;color:var(--t2);line-height:1.5}
+.goal-cta{display:none;flex-direction:column;align-items:center;gap:1rem;
+  padding-top:1rem;border-top:1px solid var(--glass-border)}
+.goal-cta.show{display:flex}
+
+/* VS PROMO SECTION */
+.vs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;max-width:800px;margin:0 auto}
+.vs-card{padding:1.5rem;text-align:center}
+.vs-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--glass-border)}
+.vs-item{display:flex;align-items:flex-start;gap:.5rem;padding:.4rem 0;font-size:.8rem;color:var(--t2);text-align:left}
+.vs-item.bad{color:var(--t3);text-decoration:none}
+.vs-check{flex-shrink:0;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;margin-top:.1rem}
+.vs-check.good{background:#22c55e22;color:#22c55e;border:1px solid #22c55e44}
+.vs-check.bad{background:#ef444422;color:#ef4444;border:1px solid #ef444433}
+
+/* PLATFORM SECTIONS */
+.platform-section{padding:3rem 2rem;max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.plat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:.75rem}
+.plat-title{display:flex;align-items:center;gap:.75rem}
+.plat-title h2{font-size:1.4rem;margin-bottom:0}
+.plat-badge{padding:.28rem .7rem;border-radius:7px;font-size:.75rem;font-weight:800}
+.bt-twitch{background:#9147ff22;color:#9147ff;border:1px solid #9147ff44}
+.bt-kick{background:#53fc1822;color:#53fc18;border:1px solid #53fc1844}
+.bt-youtube{background:#ff444422;color:#ff4444;border:1px solid #ff444444}
+.bt-tiktok{background:#ff005022;color:#ff0050;border:1px solid #ff005044}
+.view-all{font-size:.78rem;color:var(--pl);text-decoration:none;
+  border:1px solid rgba(124,58,237,.3);padding:.3rem .75rem;border-radius:7px;transition:all .2s}
+.view-all:hover{background:rgba(124,58,237,.12)}
+
+.catfilter{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.25rem;justify-content:center}
+.cbtn{padding:.27rem .7rem;border-radius:20px;font-size:.72rem;font-weight:600;cursor:pointer;
+  border:1px solid var(--glass-border);background:transparent;color:var(--t3);transition:all .2s}
+.cbtn.on,.cbtn:hover{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.4);color:var(--pl)}
+
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:.875rem}
+.sc{padding:1rem;cursor:pointer;position:relative;overflow:hidden;text-decoration:none;display:block;color:inherit;transition:all .3s}
+.sc:hover{border-color:rgba(124,58,237,.4);transform:translateY(-3px);box-shadow:0 12px 36px rgba(124,58,237,.15)}
+.sc-head{display:flex;align-items:center;gap:.65rem;margin-bottom:.65rem}
+.av{width:42px;height:42px;border-radius:50%;border:2px solid var(--glass-border);object-fit:cover;flex-shrink:0;
+  background:linear-gradient(135deg,#1a1a3e,#0d0d26)}
+.sc-info h3{font-size:.85rem;font-weight:700;margin-bottom:.1rem;color:var(--t)}
+.sc-info p{font-size:.7rem;color:var(--t2)}
+.pbadge{display:inline-flex;align-items:center;padding:.16rem .42rem;border-radius:5px;font-size:.63rem;font-weight:800}
+.pt{background:#9147ff1a;color:#9147ff;border:1px solid #9147ff33}
+.pk{background:#53fc181a;color:#53fc18;border:1px solid #53fc1833}
+.ptt{background:#ff00501a;color:#ff0050;border:1px solid #ff005033}
+.py{background:#ff44441a;color:#ff4444;border:1px solid #ff444433}
+.sthumb{width:100%;height:110px;border-radius:10px;margin-bottom:.55rem;
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.sthumb-play{font-size:1.75rem;opacity:.18;color:#fff}
+.sthumb-title{position:absolute;bottom:.35rem;left:.5rem;right:.5rem;
+  font-size:.6rem;color:rgba(255,255,255,.65);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.smeta{display:flex;align-items:center;justify-content:space-between}
+.vcount{font-size:.7rem;color:var(--t2)}
+.livebdg{background:#ef44441a;color:#ef4444;border:1px solid #ef444433;
+  padding:.1rem .38rem;border-radius:5px;font-size:.6rem;font-weight:800;animation:lb 2s infinite}
+@keyframes lb{0%,100%{opacity:1}50%{opacity:.6}}
+.boostbdg{position:absolute;top:.42rem;right:.42rem;
+  background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;
+  padding:.12rem .42rem;border-radius:5px;font-size:.6rem;font-weight:800}
+.visit-btn{display:block;margin-top:.55rem;text-align:center;font-size:.7rem;color:var(--pl);
+  border:1px solid rgba(124,58,237,.25);border-radius:7px;padding:.28rem;transition:all .2s}
+.visit-btn:hover{background:rgba(124,58,237,.12)}
+.load-more{display:block;margin:1.5rem auto 0;padding:.55rem 2rem;
+  background:transparent;border:1px solid var(--glass-border);color:var(--t2);
+  border-radius:20px;cursor:pointer;font-size:.8rem;transition:all .2s;font-family:'DM Sans',sans-serif}
+.load-more:hover{border-color:var(--pl);color:var(--pl)}
+
+/* TEAMS */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem}
+.tc{padding:1.4rem}
+.tlogo{width:50px;height:50px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:1rem;font-weight:900;margin-bottom:.875rem}
+.tc h3{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:800;margin-bottom:.25rem;color:var(--t)}
+.tc-desc{font-size:.78rem;color:var(--t2);margin-bottom:.75rem;line-height:1.55}
+.chips{display:flex;gap:.25rem;flex-wrap:wrap}
+.chip{background:rgba(255,255,255,.05);border:1px solid var(--glass-border);
+  border-radius:20px;padding:.16rem .48rem;font-size:.65rem;color:var(--t2)}
+
+/* HOW IT WORKS */
+.hiw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1rem}
+.hiw-card{padding:1.5rem;text-align:center}
+.hiw-num{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--b));
+  display:flex;align-items:center;justify-content:center;font-size:.875rem;font-weight:900;
+  margin:0 auto .875rem;box-shadow:0 0 16px #7c3aed44;color:#fff;font-family:'Syne',sans-serif}
+.hiw-title{font-size:.9rem;font-weight:700;margin-bottom:.4rem;color:var(--t);font-family:'Syne',sans-serif}
+.hiw-desc{font-size:.78rem;color:var(--t2);line-height:1.6}
+
+/* REVIEWS MARQUEE */
+.rtrack{overflow:hidden;margin:0 -2rem;padding:0 2rem}
+.rinner{display:flex;gap:1rem;animation:rscroll 50s linear infinite}
+.rinner:hover{animation-play-state:paused}
+@keyframes rscroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.rc{min-width:270px;max-width:270px;padding:1.2rem;flex-shrink:0}
+.rc-head{display:flex;align-items:center;gap:.65rem;margin-bottom:.65rem}
+.rc-av{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#1a1a3e}
+.rc-name{font-size:.82rem;font-weight:700;color:var(--t)}
+.rc-hdl{font-size:.68rem;color:var(--t3)}
+.stars{color:#f59e0b;font-size:.7rem;margin-bottom:.35rem}
+.rc-txt{font-size:.78rem;color:var(--t2);line-height:1.6}
+
+/* PRICING */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1rem}
+.pc{padding:1.75rem;text-align:center;position:relative}
+.pc.featured{border-color:rgba(124,58,237,.5);box-shadow:0 0 40px rgba(124,58,237,.2)}
+.pop-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--p),var(--b));color:#fff;
+  padding:.2rem .85rem;border-radius:20px;font-size:.68rem;font-weight:800;white-space:nowrap}
+.pc-name{font-family:'Syne',sans-serif;font-size:.8rem;font-weight:700;color:var(--t2);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:1px}
+.pc-price{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:900;
+  background:linear-gradient(135deg,var(--pl),var(--cl));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.pc-period{font-size:.73rem;color:var(--t3);margin-bottom:1.25rem}
+.pc-features{list-style:none;margin-bottom:1.5rem;text-align:left}
+.pc-features li{font-size:.78rem;color:var(--t2);padding:.28rem 0;display:flex;align-items:flex-start;gap:.45rem;border-bottom:1px solid rgba(255,255,255,.04)}
+.pc-features li:last-child{border:none}
+.check{color:#22c55e;flex-shrink:0}.x{color:var(--t3);flex-shrink:0}
+.daily-badge{display:inline-flex;align-items:center;gap:.3rem;
+  background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.3);
+  padding:.18rem .55rem;border-radius:5px;font-size:.65rem;font-weight:700;margin-top:.25rem}
+
+/* APPLY FORM */
+.aform{background:var(--glass-bg);border:1px solid var(--glass-border);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:20px;padding:2rem;max-width:640px;margin:0 auto}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+.frow.full{grid-template-columns:1fr}
+.aform label{font-size:.73rem;color:var(--t2);display:block;margin-bottom:.28rem}
+.aform input,.aform select,.aform textarea{
+  width:100%;background:rgba(255,255,255,.06);border:1px solid var(--glass-border);
+  border-radius:8px;padding:.5rem .75rem;color:var(--t);font-size:.83rem;
+  transition:border .2s;outline:none;font-family:'DM Sans',sans-serif}
+.aform input:focus,.aform select:focus,.aform textarea:focus{border-color:var(--p)}
+.aform select option{background:#1a1a3e;color:#f1f5f9}
+.aform textarea{resize:vertical;min-height:75px}
+.goals-check{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:.45rem;margin-top:.3rem}
+.gc{display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.77rem;color:var(--t2);
+  padding:.32rem .55rem;border:1px solid var(--glass-border);border-radius:7px;transition:all .2s;user-select:none}
+.gc:hover{border-color:rgba(124,58,237,.35)}
+.gc.ch{border-color:var(--p);color:var(--pl);background:rgba(124,58,237,.1)}
+.gc input{display:none}
+.gc-check{width:13px;height:13px;border-radius:3px;border:1px solid var(--glass-border);
+  display:flex;align-items:center;justify-content:center;font-size:.55rem;transition:all .2s;flex-shrink:0}
+.gc.ch .gc-check{background:var(--p);border-color:var(--p);color:#fff}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;
+  align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--glass-border);
+  backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);
+  border-radius:20px;padding:2rem;max-width:480px;width:100%;position:relative;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:1rem;right:1rem;background:transparent;
+  border:1px solid var(--glass-border);color:var(--t2);border-radius:6px;
+  padding:.22rem .48rem;cursor:pointer;font-size:.78rem}
+.modal h3{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;margin-bottom:.4rem;color:var(--t)}
+.modal-steps{display:flex;flex-direction:column;gap:.55rem;margin-bottom:1.5rem}
+.modal-step{display:flex;align-items:flex-start;gap:.7rem;padding:.7rem;
+  background:rgba(255,255,255,.04);border:1px solid var(--glass-border);border-radius:10px}
+.ms-num{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--b));
+  color:#fff;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900;flex-shrink:0}
+.ms-text{font-size:.78rem;color:var(--t2);line-height:1.5}
+.ms-text strong{color:var(--t);display:block;font-size:.8rem;margin-bottom:.08rem}
+
+/* NOTIFICATIONS */
+#notifications{position:fixed;bottom:1.25rem;left:1.25rem;z-index:1000;
+  display:flex;flex-direction:column;gap:.4rem;pointer-events:none}
+.notif{background:rgba(12,12,34,.9);border:1px solid var(--glass-border);
+  border-radius:11px;padding:.5rem .875rem;font-size:.75rem;
+  display:flex;align-items:center;gap:.5rem;min-width:230px;
+  backdrop-filter:blur(20px);animation:nIn .3s ease;box-shadow:0 4px 24px rgba(0,0,0,.5)}
+.notif.fade{animation:nOut .5s ease forwards}
+@keyframes nIn{from{transform:translateX(-110%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes nOut{to{transform:translateX(-110%);opacity:0}}
+.ni{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0}
+
+/* FOOTER */
+footer{background:rgba(3,3,15,.95);border-top:1px solid var(--glass-border);padding:3rem 2rem 1.5rem;margin-top:4rem;position:relative;z-index:1}
+.fg{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2rem;max-width:1200px;margin:0 auto 2rem}
+.fb p{font-size:.78rem;color:var(--t3);margin:.5rem 0 .875rem;line-height:1.6}
+.fsoc{display:flex;gap:.4rem}
+.fsb{width:29px;height:29px;border-radius:7px;background:var(--card);border:1px solid var(--glass-border);
+  display:flex;align-items:center;justify-content:center;font-size:.68rem;
+  cursor:pointer;color:var(--t2);transition:all .2s;text-decoration:none}
+.fsb:hover{border-color:var(--pl);color:var(--pl)}
+.fc h4{font-family:'Syne',sans-serif;font-size:.78rem;font-weight:700;margin-bottom:.55rem;color:var(--t)}
+.fc ul{list-style:none;display:flex;flex-direction:column;gap:.32rem}
+.fc ul a{font-size:.75rem;color:var(--t3);text-decoration:none;transition:color .2s}
+.fc ul a:hover{color:var(--pl)}
+.fbot{border-top:1px solid var(--glass-border);padding-top:1.25rem;display:flex;
+  justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;flex-wrap:wrap;gap:.5rem}
+.fbot p{font-size:.7rem;color:var(--t3)}
+
+@media(max-width:768px){
+  nav{padding:.7rem 1rem}.nav-links{display:none}
+  .fg{grid-template-columns:1fr 1fr}
+  .frow{grid-template-columns:1fr}
+  h2{font-size:1.4rem}.hero h1{font-size:2rem}
+  .vs-grid{grid-template-columns:1fr}
+  .rinner{animation-duration:30s}
+}
+</style>
+</head>
+<body>
+<div class="bgfx"></div>
+<div class="grain-overlay"></div>
+
+<!-- SLIDE UP INTRO -->
+<div id="intro">
+  <div class="intro-bg"></div>
+  <div class="intro-grain"></div>
+  <div style="position:relative;text-align:center">
+    <div class="intro-logo">StreamForge</div>
+    <div class="intro-sub">Premium Streaming Growth Community</div>
+    <div class="intro-bar"><div class="intro-fill"></div></div>
+  </div>
+  <div class="swipe-up-hint" onclick="dismissIntro()">
+    <div class="swipe-chevron"></div>
+    <div class="swipe-chevron2"></div>
+    <div class="swipe-label">Enter Site</div>
+  </div>
+</div>
+
+<!-- DISCORD GATE MODAL -->
+<div class="modal-overlay" id="discordModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕ Close</button>
+    <div style="font-size:1.75rem;margin-bottom:.75rem">💬</div>
+    <h3>Apply First — Then Get Discord Access</h3>
+    <p style="font-size:.83rem;color:var(--t2);margin-bottom:1.25rem;line-height:1.6">StreamForge is a <strong style="color:var(--pl)">paid, exclusive community</strong>. You must apply and be approved before joining the Discord.</p>
+    <div class="modal-steps">
+      <div class="modal-step"><div class="ms-num">1</div><div class="ms-text"><strong>Submit Your Application</strong>Fill in the form below with your channel details and goals.</div></div>
+      <div class="modal-step"><div class="ms-num">2</div><div class="ms-text"><strong>Approval Within 24hrs</strong>Our team reviews every application and responds via email.</div></div>
+      <div class="modal-step"><div class="ms-num">3</div><div class="ms-text"><strong>Receive Payment Details</strong>Once approved, payment instructions are sent to your email.</div></div>
+      <div class="modal-step"><div class="ms-num">4</div><div class="ms-text"><strong>Exclusive Discord Invite</strong>After payment confirmation, you receive full Discord member access.</div></div>
+    </div>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+      <a href="#apply" class="btn btn-primary btn-lg" onclick="closeModal()" style="flex:1;justify-content:center">Apply Now →</a>
+      <a href="mailto:contact.streamforge@gmail.com" class="btn btn-outline" style="flex:1;justify-content:center">Email Us</a>
+    </div>
+    <p style="font-size:.7rem;color:var(--t3);margin-top:.75rem;text-align:center">contact.streamforge@gmail.com</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo"><div class="logo-icon">SF</div>StreamForge</a>
+  <ul class="nav-links">
+    <li><a href="#discover">Discover</a></li>
+    <li><a href="#achievements">Results</a></li>
+    <li><a href="#howitworks">How It Works</a></li>
+    <li><a href="#teams">Teams</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#apply">Apply</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track"><div class="toggle-thumb" id="toggleThumb">🌙</div></div>
+      <span class="toggle-label" id="toggleLabel">Dark</span>
+    </div>
+    <button onclick="openDiscordModal()" class="btn btn-discord">💬 Discord</button>
+    <a href="https://www.twitch.tv" target="_blank" class="btn btn-twitch">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+      Twitch
+    </a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div style="padding:0 2rem;position:relative;z-index:1">
+<div class="hero">
+  <div class="hero-badge"><div class="ldot"></div>Premium Paid Community · Serious Streamers Only</div>
+  <h1>Boost Your Streams With Real Engagement & Smart Growth</h1>
+  <p class="hero-sub">Join thousands of streamers scaling their audience across Twitch, Kick, TikTok & YouTube. The structured engagement ecosystem built for creators serious about growth.</p>
+  <div class="hero-btns">
+    <a href="#apply" class="btn btn-primary btn-lg">🔥 Join the Community</a>
+    <a href="#discover" class="btn btn-outline btn-lg">Explore Streamers</a>
+  </div>
+  <div class="hstats">
+    <div><div class="hs-num">5.8K+</div><div class="hs-label">Active Members</div></div>
+    <div><div class="hs-num">18M+</div><div class="hs-label">Views Generated</div></div>
+    <div><div class="hs-num">94%</div><div class="hs-label">Affiliate Conversion</div></div>
+    <div><div class="hs-num">3×</div><div class="hs-label">Average Viewer Boost</div></div>
+  </div>
+</div>
+</div>
+
+<!-- GROWTH DASHBOARD -->
+<section>
+  <div class="sh">
+    <div class="stag">Live Stats</div>
+    <h2>Member Growth Dashboard</h2>
+    <p class="ssub">Real numbers from real members across all platforms</p>
+  </div>
+  <div class="dashboard">
+    <div class="dashboard-title">⚡ Member Growth Dashboard</div>
+    <div class="bar-row">
+      <div class="bar-label"><span class="bar-name">Follower Growth Rate</span><span class="bar-pct">+94%</span></div>
+      <div class="bar-track"><div class="bar-fill bar-purple" id="b1" style="width:0"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"><span class="bar-name">Avg Viewer Increase</span><span class="bar-pct">+87%</span></div>
+      <div class="bar-track"><div class="bar-fill bar-gold" id="b2" style="width:0"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"><span class="bar-name">Chat Engagement</span><span class="bar-pct">+78%</span></div>
+      <div class="bar-track"><div class="bar-fill bar-teal" id="b3" style="width:0"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label"><span class="bar-name">Affiliate Conversion</span><span class="bar-pct">+91%</span></div>
+      <div class="bar-track"><div class="bar-fill bar-gold" id="b4" style="width:0"></div></div>
+    </div>
+    <div class="dash-stats">
+      <div class="dstat"><div class="dstat-num">14d</div><div class="dstat-label">Avg Affiliate</div></div>
+      <div class="dstat"><div class="dstat-num">3×</div><div class="dstat-label">Viewer Boost</div></div>
+      <div class="dstat"><div class="dstat-num">98%</div><div class="dstat-label">Satisfaction</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENT WALL -->
+<section id="achievements">
+  <div class="sh">
+    <div class="stag">Proof It Works</div>
+    <h2>Real Members. Real Results.</h2>
+    <p class="ssub">Streamers who joined StreamForge and achieved milestones — Partner, Affiliate, Top Category, and income</p>
+  </div>
+  <div class="ach-grid" id="achGrid"></div>
+</section>
+
+<!-- GOAL SELECTOR -->
+<div style="padding:0 2rem;margin-bottom:2rem;position:relative;z-index:1">
+<div class="goal-section">
+  <div class="stag">Who is this for?</div>
+  <h2>What Are You Trying to Achieve?</h2>
+  <p style="color:var(--t2);margin-bottom:2rem;font-size:.95rem">Select one or more goals — see why StreamForge is better than paying a promoter</p>
+  <div class="goals-grid" id="goalsGrid">
+    <div class="goal-card" onclick="toggleGoal(this,'partner')">
+      <div class="goal-sel-badge">✓</div><div class="goal-icon">🏆</div>
+      <div class="goal-title">Achieve Twitch Partner</div>
+      <div class="goal-desc">Serious creator ready for the Partner badge and sustained channel growth.</div>
+    </div>
+    <div class="goal-card" onclick="toggleGoal(this,'affiliate')">
+      <div class="goal-sel-badge">✓</div><div class="goal-icon">⭐</div>
+      <div class="goal-title">Attain Affiliate Status</div>
+      <div class="goal-desc">Hit the 50 followers, 500 minutes, 7 days, and 3 avg viewer requirements.</div>
+    </div>
+    <div class="goal-card" onclick="toggleGoal(this,'rank')">
+      <div class="goal-sel-badge">✓</div><div class="goal-icon">📊</div>
+      <div class="goal-title">Rank in Your Category</div>
+      <div class="goal-desc">Dominate the discovery feed in FPS, IRL, or any category organically.</div>
+    </div>
+    <div class="goal-card" onclick="toggleGoal(this,'income')">
+      <div class="goal-sel-badge">✓</div><div class="goal-icon">💰</div>
+      <div class="goal-title">Make Income Streaming</div>
+      <div class="goal-desc">Turn your stream into real revenue through subs, bits, and brand deals.</div>
+    </div>
+    <div class="goal-card" onclick="toggleGoal(this,'fun')">
+      <div class="goal-sel-badge">✓</div><div class="goal-icon">🎮</div>
+      <div class="goal-title">Streaming for Fun</div>
+      <div class="goal-desc">You love streaming and want a real community that actually shows up.</div>
+    </div>
+    <div class="goal-card" onclick="toggleGoal(this,'promo')">
+      <div class="goal-sel-badge">✓</div><div class="goal-icon">📣</div>
+      <div class="goal-title">Already Paying a Promoter?</div>
+      <div class="goal-desc">You're spending on promo with weak results. Here's why this is different.</div>
+    </div>
+  </div>
+  <div class="goal-cta" id="goalCta">
+    <p style="font-size:.95rem;font-weight:700;color:var(--pl);max-width:560px;text-align:center" id="goalMsg"></p>
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center">
+      <a href="#apply" class="btn btn-primary btn-lg">Join the Premium Community</a>
+      <button onclick="openDiscordModal()" class="btn btn-discord btn-lg">💬 Discord Server</button>
+    </div>
+    <p style="font-size:.76rem;color:var(--t3)">This is a paid community. Apply below or email us to get started.</p>
+  </div>
+</div>
+</div>
+
+<!-- STREAMFORGE VS PROMOTER -->
+<section>
+  <div class="sh">
+    <div class="stag">Why StreamForge</div>
+    <h2>Stop Paying Promoters. Join a Community.</h2>
+    <p class="ssub">Here's what you get with StreamForge vs spending money on promoters and shoutouts</p>
+  </div>
+  <div class="vs-grid">
+    <div class="glass vs-card" style="border-color:rgba(239,68,68,.3)">
+      <div class="vs-title" style="color:#ef4444">❌ Paying a Promoter</div>
+      <div class="vs-item bad"><div class="vs-check bad">✕</div>One-time shoutout, forgotten in hours</div>
+      <div class="vs-item bad"><div class="vs-check bad">✕</div>Followers that don't watch or chat</div>
+      <div class="vs-item bad"><div class="vs-check bad">✕</div>No accountability or results tracking</div>
+      <div class="vs-item bad"><div class="vs-check bad">✕</div>No raids, no real viewer growth</div>
+      <div class="vs-item bad"><div class="vs-check bad">✕</div>Repeat spending with diminishing returns</div>
+      <div class="vs-item bad"><div class="vs-check bad">✕</div>Zero community support or collab</div>
+      <div class="vs-item bad"><div class="vs-check bad">✕</div>Algorithm doesn't recognize ghost followers</div>
+    </div>
+    <div class="glass vs-card" style="border-color:rgba(124,58,237,.5);box-shadow:0 0 30px rgba(124,58,237,.12)">
+      <div class="vs-title" style="color:#a78bfa">⚡ StreamForge Community</div>
+      <div class="vs-item"><div class="vs-check good">✓</div>Ongoing raid network with real live viewers</div>
+      <div class="vs-item"><div class="vs-check good">✓</div>Members who actually watch, chat & follow</div>
+      <div class="vs-item"><div class="vs-check good">✓</div>Growth dashboard to track your progress</div>
+      <div class="vs-item"><div class="vs-check good">✓</div>Coordinated raids boost you on peak moments</div>
+      <div class="vs-item"><div class="vs-check good">✓</div>Collab matchmaking with compatible streamers</div>
+      <div class="vs-item"><div class="vs-check good">✓</div>Verified badge + brand deal introductions</div>
+      <div class="vs-item"><div class="vs-check good">✓</div>Algorithm recognizes authentic engagement</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="howitworks">
+  <div class="sh">
+    <div class="stag">How It Works</div>
+    <h2>Simple. Transparent. Effective.</h2>
+    <p class="ssub">No confusion, no bots — a premium community that moves together</p>
+  </div>
+  <div class="hiw-grid">
+    <div class="glass hiw-card">
+      <div class="hiw-num">01</div><div class="hiw-title">Apply & Join</div>
+      <div class="hiw-desc">Submit your application. Reviewed within 24hrs. Payment details sent via email after approval.</div>
+    </div>
+    <div class="glass hiw-card">
+      <div class="hiw-num">02</div><div class="hiw-title">Get Discord Access</div>
+      <div class="hiw-desc">After payment you get your exclusive Discord invite — raid networks, collab channels, growth coaching.</div>
+    </div>
+    <div class="glass hiw-card">
+      <div class="hiw-num">03</div><div class="hiw-title">Join the Network</div>
+      <div class="hiw-desc">Your channel is listed on StreamForge and you're matched with streamers in your niche automatically.</div>
+    </div>
+    <div class="glass hiw-card">
+      <div class="hiw-num">04</div><div class="hiw-title">Grow Together</div>
+      <div class="hiw-desc">Participate in raids, collabs, and coordinated events. Members show up and hold each other accountable.</div>
+    </div>
+    <div class="glass hiw-card">
+      <div class="hiw-num">05</div><div class="hiw-title">Track Results</div>
+      <div class="hiw-desc">Monitor follower growth, viewer increase, and engagement in your exclusive member analytics.</div>
+    </div>
+    <div class="glass hiw-card">
+      <div class="hiw-num">06</div><div class="hiw-title">Level Up</div>
+      <div class="hiw-desc">Upgrade for brand deal intros, partnership support, homepage features, and 1-on-1 coaching.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TWITCH -->
+<div class="platform-section" id="discover">
+  <div class="plat-header">
+    <div class="plat-title">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="#9147ff"><path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/></svg>
+      <h2 style="color:#9147ff">Twitch Streamers</h2>
+      <span class="plat-badge bt-twitch">LIVE</span>
+    </div>
+    <a href="https://www.twitch.tv" target="_blank" class="view-all">Browse Twitch →</a>
+  </div>
+  <div class="catfilter" id="twitch-cats">
+    <button class="cbtn on" onclick="filterTwitch('all',this)">All</button>
+    <button class="cbtn" onclick="filterTwitch('fps',this)">FPS</button>
+    <button class="cbtn" onclick="filterTwitch('irl',this)">IRL</button>
+    <button class="cbtn" onclick="filterTwitch('strategy',this)">Strategy</button>
+    <button class="cbtn" onclick="filterTwitch('sports',this)">Sports</button>
+    <button class="cbtn" onclick="filterTwitch('variety',this)">Variety</button>
+    <button class="cbtn" onclick="filterTwitch('rpg',this)">RPG</button>
+  </div>
+  <div class="sgrid" id="twitchGrid"></div>
+  <button class="load-more" onclick="loadMoreTwitch()">Load More Twitch Streamers →</button>
+</div>
+
+<!-- KICK -->
+<div class="platform-section">
+  <div class="plat-header">
+    <div class="plat-title">
+      <div style="width:19px;height:19px;background:#53fc18;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;color:#000">K</div>
+      <h2 style="color:#53fc18">Kick Streamers</h2>
+      <span class="plat-badge bt-kick">LIVE</span>
+    </div>
+    <a href="https://kick.com" target="_blank" class="view-all">Browse Kick →</a>
+  </div>
+  <div class="catfilter" id="kick-cats">
+    <button class="cbtn on" onclick="filterKick('all',this)">All</button>
+    <button class="cbtn" onclick="filterKick('irl',this)">IRL / Chat</button>
+    <button class="cbtn" onclick="filterKick('fps',this)">FPS</button>
+    <button class="cbtn" onclick="filterKick('variety',this)">Variety</button>
+  </div>
+  <div class="sgrid" id="kickGrid"></div>
+  <button class="load-more" onclick="loadMoreKick()">Load More Kick Streamers →</button>
+</div>
+
+<!-- YOUTUBE -->
+<div class="platform-section">
+  <div class="plat-header">
+    <div class="plat-title">
+      <svg width="19" height="14" viewBox="0 0 576 512" fill="#ff4444"><path d="M549.7 124.1c-6.3-23.7-24.8-42.3-48.3-48.6C458.8 64 288 64 288 64S117.2 64 74.6 75.5c-23.5 6.3-42 24.9-48.3 48.6-11.4 42.9-11.4 132.3-11.4 132.3s0 89.4 11.4 132.3c6.3 23.7 24.8 41.5 48.3 47.8C117.2 448 288 448 288 448s170.8 0 213.4-11.5c23.5-6.3 42-24.2 48.3-47.8 11.4-42.9 11.4-132.3 11.4-132.3s0-89.4-11.4-132.3zm-317.5 213.5V175.2l142.7 81.2-142.7 81.2z"/></svg>
+      <h2 style="color:#ff4444">YouTube Creators</h2>
+      <span class="plat-badge bt-youtube">LIVE</span>
+    </div>
+    <a href="https://youtube.com/gaming" target="_blank" class="view-all">Browse YouTube →</a>
+  </div>
+  <div class="catfilter" id="yt-cats">
+    <button class="cbtn on" onclick="filterYT('all',this)">All</button>
+    <button class="cbtn" onclick="filterYT('fps',this)">FPS</button>
+    <button class="cbtn" onclick="filterYT('variety',this)">Variety</button>
+    <button class="cbtn" onclick="filterYT('rpg',this)">RPG</button>
+    <button class="cbtn" onclick="filterYT('tech',this)">Tech</button>
+    <button class="cbtn" onclick="filterYT('irl',this)">IRL</button>
+  </div>
+  <div class="sgrid" id="ytGrid"></div>
+  <button class="load-more" onclick="loadMoreYT()">Load More YouTube Creators →</button>
+</div>
+
+<!-- TIKTOK -->
+<div class="platform-section">
+  <div class="plat-header">
+    <div class="plat-title">
+      <div style="font-size:16px;line-height:1">🎵</div>
+      <h2 style="color:#ff0050">TikTok Creators</h2>
+      <span class="plat-badge bt-tiktok">LIVE</span>
+    </div>
+    <a href="https://www.tiktok.com/live" target="_blank" class="view-all">Browse TikTok →</a>
+  </div>
+  <div class="sgrid" id="tiktokGrid"></div>
+  <button class="load-more" onclick="loadMoreTT()">Load More TikTok Creators →</button>
+</div>
+
+<!-- TEAMS -->
+<section id="teams">
+  <div class="sh">
+    <div class="stag">Teams</div>
+    <h2>Verified Creator Teams</h2>
+    <p class="ssub">Join an elite team for Discord scouting, credibility, and coordinated growth</p>
+  </div>
+  <div class="tgrid" id="teamsGrid"></div>
+</section>
+
+<!-- REVIEWS -->
+<section id="reviews">
+  <div class="sh">
+    <div class="stag">Success Stories</div>
+    <h2>Real Streamers. Real Results.</h2>
+    <p class="ssub">No bots. No fake reviews. Creators who grew with StreamForge.</p>
+  </div>
+  <div class="rtrack"><div class="rinner" id="reviewsInner"></div></div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="sh">
+    <div class="stag">Paid Access Only</div>
+    <h2>Access to StreamForge is Premium</h2>
+    <p class="ssub">A paid growth community for serious streamers. Value always exceeds price.</p>
+  </div>
+  <div class="pgrid">
+    <div class="glass pc">
+      <div class="pc-name">Starter</div>
+      <div class="pc-price">$55</div>
+      <div class="pc-period">/ month · cancel anytime</div>
+      <ul class="pc-features">
+        <li><span class="check">✓</span>Join the Raid Network</li>
+        <li><span class="check">✓</span>Community Discord Access</li>
+        <li><span class="check">✓</span>5 Collab Requests / month</li>
+        <li><span class="check">✓</span>Basic Growth Analytics</li>
+        <li><span class="check">✓</span>Streamer Directory Listing</li>
+        <li><span class="x">✗</span>Priority Raid Placement</li>
+        <li><span class="x">✗</span>Verified Badge</li>
+        <li><span class="x">✗</span>1-on-1 Coaching</li>
+      </ul>
+      <a href="#apply" class="btn btn-outline" style="width:100%;justify-content:center;padding:.6rem">Apply Now</a>
+    </div>
+    <div class="glass pc featured">
+      <div class="pop-badge">⚡ Most Popular</div>
+      <div class="pc-name">Elite</div>
+      <div class="pc-price">$149</div>
+      <div class="pc-period">/ month · best value</div>
+      <ul class="pc-features">
+        <li><span class="check">✓</span>Everything in Starter</li>
+        <li><span class="check">✓</span>Priority Raid Placement</li>
+        <li><span class="check">✓</span>Unlimited Collab Requests</li>
+        <li><span class="check">✓</span>StreamForge Verified Badge</li>
+        <li><span class="check">✓</span>Featured in Discover Feed</li>
+        <li><span class="check">✓</span>Advanced Growth Analytics</li>
+        <li><span class="check">✓</span>Brand Deal Alerts</li>
+        <li><span class="x">✗</span>Listed on Website + 1-on-1</li>
+      </ul>
+      <a href="#apply" class="btn btn-primary" style="width:100%;justify-content:center;padding:.6rem">Join Elite 🔥</a>
+    </div>
+    <div class="glass pc">
+      <div class="pop-badge" style="background:linear-gradient(135deg,#f59e0b,#f97316)">👑 Pro Tier</div>
+      <div class="pc-name">Nexus Pro</div>
+      <div class="pc-price">$240</div>
+      <div class="pc-period">/ month · for serious creators</div>
+      <ul class="pc-features">
+        <li><span class="check">✓</span>Everything in Elite</li>
+        <li><span class="check">✓</span><strong style="color:var(--pl)">Listed on StreamForge website</strong></li>
+        <li><span class="check">✓</span>1-on-1 Growth Coaching sessions</li>
+        <li><span class="check">✓</span>Brand Deal Introductions</li>
+        <li><span class="check">✓</span>Partner Application Support</li>
+        <li><span class="check">✓</span>Custom Collab Events</li>
+        <li><span class="check">✓</span>Dedicated Account Manager</li>
+        <li><span class="daily-badge">📊 Daily visitor count shown on your card</span></li>
+      </ul>
+      <a href="#apply" class="btn btn-outline" style="width:100%;justify-content:center;padding:.6rem;border-color:#f59e0b;color:#f59e0b">Go Pro</a>
+    </div>
+  </div>
+  <p style="text-align:center;font-size:.76rem;color:var(--t3);margin-top:1.25rem">🔒 Payment details sent via email after application approval · <a href="mailto:contact.streamforge@gmail.com" style="color:var(--pl)">contact.streamforge@gmail.com</a></p>
+</section>
+
+<!-- APPLY -->
+<section id="apply">
+  <div class="sh">
+    <div class="stag">Submit Application</div>
+    <h2>Apply to StreamForge</h2>
+    <p class="ssub">Our team responds within 24 hours. Payment handled via email after approval.</p>
+  </div>
+  <div class="aform">
+    <h3 style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;margin-bottom:.25rem;color:var(--t)">✦ Streamer Application</h3>
+    <p style="font-size:.82rem;color:var(--t2);margin-bottom:1.5rem;line-height:1.6">Fill this form and we'll respond within 24 hours. <strong style="color:var(--pl)">Paid community</strong> — payment details sent after approval. No automatic charges.</p>
+    <div id="appSuccess" style="display:none;text-align:center;padding:1.5rem;color:#22c55e;font-weight:700;font-size:1rem">✅ Application submitted! We'll reach out within 24 hours.</div>
+    <div id="appForm">
+      <div class="frow">
+        <div><label>Streamer Name</label><input type="text" placeholder="e.g. NightStrike" id="appName"></div>
+        <div><label>Email Address</label><input type="email" placeholder="your@email.com" id="appEmail"></div>
+      </div>
+      <div class="frow">
+        <div><label>Primary Platform</label>
+          <select id="appPlat"><option value="">Select</option><option>Twitch</option><option>Kick</option><option>YouTube</option><option>TikTok</option><option>Multiple</option></select>
+        </div>
+        <div><label>Avg Live Viewers</label>
+          <select id="appViewers"><option value="">Select</option><option>0–5</option><option>5–20</option><option>20–100</option><option>100–500</option><option>500+</option></select>
+        </div>
+      </div>
+      <div class="frow full"><label>Channel Link</label><input type="text" placeholder="https://twitch.tv/yourchannel" id="appLink"></div>
+      <div class="frow full"><label>Plan Interested In</label>
+        <select id="appPlan"><option value="">Select a plan</option><option>Starter – $55/month</option><option>Elite – $149/month</option><option>Nexus Pro – $240/month (listed on website)</option></select>
+      </div>
+      <div class="frow full">
+        <label>Your Goals (select all that apply)</label>
+        <div class="goals-check">
+          <label class="gc" onclick="toggleGC(this)"><input type="checkbox"><div class="gc-check"></div>🏆 Reach Partner</label>
+          <label class="gc" onclick="toggleGC(this)"><input type="checkbox"><div class="gc-check"></div>⭐ Achieve Affiliate</label>
+          <label class="gc" onclick="toggleGC(this)"><input type="checkbox"><div class="gc-check"></div>📊 Rank in Category</label>
+          <label class="gc" onclick="toggleGC(this)"><input type="checkbox"><div class="gc-check"></div>💰 Make Income</label>
+          <label class="gc" onclick="toggleGC(this)"><input type="checkbox"><div class="gc-check"></div>🎮 Grow Community</label>
+          <label class="gc" onclick="toggleGC(this)"><input type="checkbox"><div class="gc-check"></div>📣 Beat Promoters</label>
+        </div>
+      </div>
+      <div class="frow full"><label>Tell us about your stream</label>
+        <textarea placeholder="What do you stream? Current situation? What do you need help with?" id="appBio"></textarea>
+      </div>
+      <div class="frow full"><label>Inquiry Type</label>
+        <select id="appType"><option>Streamer Application</option><option>Collaboration / Partnership</option><option>Brand Sponsorship</option><option>General Inquiry</option></select>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.25rem;align-items:center">
+        <button class="btn btn-primary btn-lg" onclick="submitApp()">✦ Submit Application</button>
+        <span style="font-size:.73rem;color:var(--t3)">⚡ 24hr response · 🌍 Open worldwide</span>
+      </div>
+      <div style="display:flex;gap:.75rem;margin-top:.875rem;flex-wrap:wrap">
+        <button onclick="openDiscordModal()" class="btn btn-discord">💬 Join Discord (Apply First)</button>
+        <a href="mailto:contact.streamforge@gmail.com" class="btn btn-outline">✉ contact.streamforge@gmail.com</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fg">
+    <div class="fb">
+      <div class="logo" style="margin-bottom:.5rem"><div class="logo-icon">SF</div>StreamForge</div>
+      <p>The premium growth community for streamers across Twitch, Kick, TikTok & YouTube. Paid access. Real results.</p>
+      <div class="fsoc">
+        <a href="https://www.twitch.tv" target="_blank" class="fsb">tw</a>
+        <button onclick="openDiscordModal()" class="fsb">dc</button>
+        <a href="https://youtube.com" target="_blank" class="fsb">yt</a>
+        <a href="mailto:contact.streamforge@gmail.com" class="fsb">@</a>
+      </div>
+    </div>
+    <div class="fc"><h4>Platform</h4><ul><li><a href="#">About</a></li><li><a href="#discover">Discover</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#apply">Apply</a></li></ul></div>
+    <div class="fc"><h4>Resources</h4><ul><li><a href="#">Creator Guides</a></li><li><a href="#" onclick="openDiscordModal();return false">Discord</a></li><li><a href="#">Blog</a></li><li><a href="#achievements">Success Stories</a></li></ul></div>
+    <div class="fc"><h4>Legal</h4><ul><li><a href="#">Terms</a></li><li><a href="#">Privacy</a></li><li><a href="#">Cookies</a></li><li><a href="mailto:contact.streamforge@gmail.com">Contact</a></li></ul></div>
+  </div>
+  <div class="fbot">
+    <p>© 2025 StreamForge. All rights reserved.</p>
+    <p>contact.streamforge@gmail.com</p>
+  </div>
+</footer>
+
+<div id="notifications"></div>
+
+<script>
+const fallbackAv=(n)=>`https://ui-avatars.com/api/?name=${encodeURIComponent(n)}&background=1a1a3e&color=a78bfa&size=44&bold=true&rounded=true`;
+const twitchPfp=(u)=>`https://static-cdn.jtvnw.net/jtv_user_pictures/${u.toLowerCase()}-profile_image-300x300.png`;
+const ytPfp=(handle)=>`https://yt3.googleusercontent.com/ytc/placeholder`;
+
+const TWITCH_DATA=[
+  {n:'Beaulo',u:'beaulo',g:'Rainbow Six Siege',c:'fps',v:11200,t:'Diamond Ranked Queue',boost:false},
+  {n:'Pengu',u:'pengu',g:'Rainbow Six Siege',c:'fps',v:8800,t:'Pro League Scrims Live'},
+  {n:'Clix',u:'clix',g:'Fortnite',c:'fps',v:18700,t:'Zero Build Cash Cup Prep',boost:true},
+  {n:'Bugha',u:'bugha',g:'Fortnite',c:'fps',v:14200,t:'FNCS Qualifier Day 2'},
+  {n:'Mongraal',u:'mongraal',g:'Fortnite',c:'fps',v:11300,t:'EU Arena Top Lobby'},
+  {n:'SypherPK',u:'sypherpk',g:'Fortnite',c:'fps',v:9700,t:'New Season First Look'},
+  {n:'Aydan',u:'aydan',g:'Warzone',c:'fps',v:13800,t:'Ranked Resurgence Grind',boost:true},
+  {n:'Swagg',u:'swagg',g:'Warzone',c:'fps',v:11200,t:'Quads World Record Attempt'},
+  {n:'Huskerrs',u:'huskerrs',g:'Warzone',c:'fps',v:8100,t:'S3 Ranked Top 250'},
+  {n:'TeePee',u:'teepee',g:'Warzone',c:'fps',v:6800,t:'Controller Warzone Ranked'},
+  {n:'s1mple',u:'s1mple',g:'CS2',c:'fps',v:32000,t:'FPL Match — Watch Live',boost:true},
+  {n:'shroud',u:'shroud',g:'CS2',c:'fps',v:28700,t:'Premier 18k Rating Grind'},
+  {n:'tarik',u:'tarik',g:'CS2',c:'fps',v:19400,t:'Major VODs Rewatch'},
+  {n:'ImperialHal',u:'imperialhal',g:'Apex Legends',c:'fps',v:17600,t:'ALGS Scrims Practice',boost:true},
+  {n:'iiTzTimmy',u:'iitztimmy',g:'Apex Legends',c:'fps',v:14100,t:'Pred Ranked — 3-Stack'},
+  {n:'ShivFPS',u:'shivfps',g:'Apex Legends',c:'fps',v:8200,t:'Ranked Ladder Climb'},
+  {n:'NiceWigg',u:'nicewigg',g:'Apex Legends',c:'fps',v:6400,t:'Diamond Ranked Push'},
+  {n:'Flats',u:'flats',g:'Overwatch 2',c:'fps',v:9600,t:'Masters Tank Push'},
+  {n:'Emongg',u:'emongg',g:'Overwatch 2',c:'fps',v:7400,t:'Support Guide Live'},
+  {n:'ML7',u:'ml7support',g:'Overwatch 2',c:'fps',v:5800,t:'Ana Main Diamond Climb'},
+  {n:'Buddha',u:'buddha',g:'GTA V',c:'variety',v:21000,t:'NoPixel RP — New Arc',boost:true},
+  {n:'Sykkuno',u:'sykkuno',g:'GTA V',c:'variety',v:16400,t:'NoPixel Chill RP'},
+  {n:'RatedEpicz',u:'ratedepicz',g:'GTA V',c:'variety',v:8900,t:'Gang RP Storyline'},
+  {n:'Ramee',u:'ramee',g:'GTA V',c:'variety',v:7600,t:'Cop vs Criminal RP'},
+  {n:'Tyler1',u:'tyler1',g:'League of Legends',c:'strategy',v:31400,t:'Iron to Challenger S15',boost:true},
+  {n:'Faker',u:'faker',g:'League of Legends',c:'strategy',v:44800,t:'T1 Scrim Watch'},
+  {n:'Doublelift',u:'doublelift',g:'League of Legends',c:'strategy',v:14200,t:'Challenger ADC Climb'},
+  {n:'Thebausffs',u:'thebausffs',g:'League of Legends',c:'strategy',v:9800,t:'Inting Sion EU Master'},
+  {n:'Gorgc',u:'gorgc',g:'Dota 2',c:'strategy',v:8900,t:'Immortal Bracket Games'},
+  {n:'Arteezy',u:'arteezy',g:'Dota 2',c:'strategy',v:7200,t:'Divine Carry Gameplay'},
+  {n:'Asmongold',u:'asmongold',g:'World of Warcraft',c:'rpg',v:22400,t:'The War Within Mythic+',boost:true},
+  {n:'Sodapoppin',u:'sodapoppin',g:'World of Warcraft',c:'rpg',v:16800,t:'Classic Season of Discovery'},
+  {n:'Distortion2',u:'distortion2',g:'Elden Ring',c:'rpg',v:11200,t:'Shadow of Erdtree Speedrun'},
+  {n:'Tectone',u:'tectone',g:'Genshin Impact',c:'rpg',v:8600,t:'5.0 Full Story Reaction'},
+  {n:'Castro1021',u:'castro_1021',g:'EA Sports FC',c:'sports',v:9100,t:'Weekend League Elite Run'},
+  {n:'Agent00',u:'agent00',g:'NBA 2K',c:'sports',v:12400,t:'2K League Qualifying',boost:true},
+  {n:'SquishyMuffinz',u:'squishymuffinz',g:'Rocket League',c:'sports',v:8800,t:'SSL Ranked 1v1s'},
+  {n:'Rizzo',u:'rizzo',g:'Rocket League',c:'sports',v:6700,t:'Grand Champ Threes'},
+  {n:'Tubbo',u:'tubbo',g:'Minecraft',c:'variety',v:14600,t:'SMP Season 4 Premiere',boost:true},
+  {n:'Ranboo',u:'ranboo',g:'Minecraft',c:'variety',v:12100,t:'Hardcore World Day 14'},
+  {n:'Philza',u:'philza',g:'Minecraft',c:'variety',v:9400,t:'Hardcore 1.21 Survival'},
+  {n:'Otzdarva',u:'otzdarva',g:'Dead by Daylight',c:'variety',v:8200,t:'Killing 1000 Survivors'},
+  {n:'DisguisedToast',u:'disguisedtoast',g:'Among Us',c:'variety',v:11600,t:'100 Player Modded Lobby'},
+  {n:'GMHikaru',u:'gmhikaru',g:'Chess',c:'strategy',v:18400,t:'Speed Chess Championship',boost:true},
+  {n:'GibiASMR',u:'gibiasmr',g:'ASMR',c:'irl',v:7800,t:'Tapping & Triggers Session'},
+  {n:'Blooprint',u:'blooprint',g:'Rust',c:'variety',v:6900,t:'Solo Zerging Mega Base'},
+  {n:'KreekCraft',u:'kreekcraft',g:'Roblox',c:'variety',v:5400,t:'New Roblox Update Live'},
+  {n:'Jinnytty',u:'jinnytty',g:'IRL',c:'irl',v:9800,t:'Seoul City Walk'},
+  {n:'MacieJay',u:'maciejay',g:'Rainbow Six Siege',c:'fps',v:5900,t:'Pro Player Analysis'},
+  {n:'Spoit',u:'spoit',g:'Rainbow Six Siege',c:'fps',v:4800,t:'Diamond Ranked Grind'},
+];
+
+const KICK_DATA=[
+  {n:'Swagg',u:'swagg',g:'Warzone',c:'fps',v:14800,t:'Ranked Resurgence Top 50',boost:true},
+  {n:'Mutex',u:'mutex',g:'Warzone',c:'fps',v:9100,t:'Solo Warzone Ranked'},
+  {n:'Aydan',u:'aydan',g:'Warzone',c:'fps',v:12300,t:'S3 Ranked Grind'},
+  {n:'Clix',u:'clix',g:'Fortnite',c:'fps',v:16200,t:'Zero Build Reload Ranked',boost:true},
+  {n:'Tfue',u:'tfue',g:'Fortnite',c:'fps',v:14100,t:'Solo Cash Cup Finals'},
+  {n:'N3on',u:'n3on',g:'Just Chatting',c:'irl',v:22400,t:'Reacting to Viral Clips'},
+  {n:'Jack Doherty',u:'jackdoherty',g:'IRL',c:'irl',v:18600,t:'YouTube vs Kick Debate'},
+  {n:'Adin Ross',u:'adinross',g:'Just Chatting',c:'irl',v:48200,t:'IRL Stream — Miami Beach',boost:true},
+  {n:'Buddha',u:'buddha',g:'GTA V',c:'variety',v:19200,t:'NoPixel New Character'},
+  {n:'Ramee',u:'ramee',g:'GTA V',c:'variety',v:14600,t:'Gang Heist Planning'},
+  {n:'RatedEpicz',u:'ratedepicz',g:'GTA V',c:'variety',v:8700,t:'Criminal Arc Episode 12'},
+  {n:'Summit1g',u:'summit1g',g:'Variety',c:'variety',v:18900,t:'Tarkov Wipe Day',boost:true},
+  {n:'YourRAGE',u:'yourrage',g:'Just Chatting',c:'irl',v:12800,t:'Viewer Call-In Show'},
+  {n:'BruceDropEmOff',u:'brucedropemoff',g:'Just Chatting',c:'irl',v:9600,t:'Morning React Stream'},
+  {n:'Roshtein',u:'roshtein',g:'Variety',c:'variety',v:22100,t:'Slot Challenge — Big Win?'},
+  {n:'Vitaly',u:'vitaly',g:'IRL',c:'irl',v:8800,t:'Europe IRL Walk Day 3'},
+  {n:'Sneako',u:'sneako',g:'Just Chatting',c:'irl',v:14300,t:'Hot Take Thursday'},
+  {n:'CodeMiko',u:'codemiko',g:'Tech',c:'variety',v:7600,t:'Virtual Avatar Update'},
+  {n:'Destiny',u:'destiny',g:'Strategy',c:'variety',v:8200,t:'Political Debate Night'},
+  {n:'DDG',u:'ddg',g:'Just Chatting',c:'irl',v:11400,t:'Music + Gaming Hybrid'},
+  {n:'Tory Lanez',u:'torylanez',g:'Music',c:'variety',v:18700,t:'New Album Listening Party',boost:true},
+  {n:'Blueface',u:'blueface',g:'Music',c:'variety',v:12200,t:'Freestyle Friday Live'},
+  {n:'Xposed',u:'xposed',g:'Variety',c:'variety',v:8900,t:'Variety Night with Subs'},
+  {n:'Zherka',u:'zherka',g:'Just Chatting',c:'irl',v:7400,t:'Unfiltered React Stream'},
+  {n:'GMHikaru',u:'gmhikaru',g:'Chess',c:'variety',v:16800,t:'Speed Chess Blitz Pro Level'},
+  {n:'Fousey',u:'fousey',g:'Just Chatting',c:'irl',v:9100,t:'Comeback Stream Special'},
+  {n:'Trainwreckstv',u:'trainwreckstv',g:'Variety',c:'variety',v:28400,t:'Live with the Boys',boost:true},
+  {n:'DWJFT',u:'dwjft',g:'GTA V',c:'variety',v:6400,t:'GTA RP First Day Back'},
+];
+
+const YT_DATA=[
+  {n:'FaZe Jev',u:'FaZeJev',g:'FPS / Shooter',c:'fps',v:0,t:'COD Warzone Season 3',sub:'7M',link:'https://www.youtube.com/@FaZeJev'},
+  {n:'NickMercs',u:'NickMercs',g:'FPS / Shooter',c:'fps',v:0,t:'Warzone Ranked Top 250',sub:'7.2M',link:'https://www.youtube.com/@NickMercs',boost:true},
+  {n:'Swagg YT',u:'Swagg',g:'FPS / Shooter',c:'fps',v:0,t:'Best Warzone Moments',sub:'4.8M',link:'https://www.youtube.com/@Swagg'},
+  {n:'Dr DisRespect',u:'DrDisRespect',g:'FPS / Shooter',c:'fps',v:0,t:'YouTube Gaming Special',sub:'4.1M',link:'https://www.youtube.com/@DrDisRespect'},
+  {n:'Aydan YT',u:'Aydan',g:'FPS',c:'fps',v:0,t:'Warzone S3 Highlights',sub:'2.1M',link:'https://www.youtube.com/@Aydan'},
+  {n:'Markiplier',u:'markiplier',g:'Variety Gaming',c:'variety',v:0,t:'New Horror Game Playthrough',sub:'36M',link:'https://www.youtube.com/@markiplier'},
+  {n:'Jacksepticeye',u:'jacksepticeye',g:'Variety Gaming',c:'variety',v:0,t:'Indie Game Deep Dive',sub:'32M',link:'https://www.youtube.com/@jacksepticeye'},
+  {n:'VanossGaming',u:'VanossGaming',g:'Variety Gaming',c:'variety',v:0,t:'GTA Funny Moments Ep.800',sub:'26M',link:'https://www.youtube.com/@VanossGaming'},
+  {n:'CoryxKenshin',u:'CoryxKenshin',g:'Variety Gaming',c:'variety',v:0,t:'Horror Marathon Stream',sub:'18M',link:'https://www.youtube.com/@CoryxKenshin'},
+  {n:'Dream',u:'Dream',g:'Minecraft / RPG',c:'rpg',v:0,t:'Minecraft Manhunt Finale',sub:'32M',link:'https://www.youtube.com/@Dream',boost:true},
+  {n:'TommyInnit',u:'TommyInnit',g:'Minecraft / RPG',c:'rpg',v:0,t:'DSMP Reunion Special',sub:'15M',link:'https://www.youtube.com/@TommyInnit'},
+  {n:'Grian',u:'Grian',g:'Minecraft',c:'rpg',v:0,t:'Hermitcraft Season 11',sub:'10M',link:'https://www.youtube.com/@Grian'},
+  {n:'Mumbo Jumbo',u:'MumboJumbo',g:'Minecraft',c:'rpg',v:0,t:'Redstone Mega Build',sub:'9.2M',link:'https://www.youtube.com/@MumboJumbo'},
+  {n:'Typical Gamer',u:'TypicalGamer',g:'GTA V',c:'variety',v:0,t:'GTA 6 First Impression',sub:'15M',link:'https://www.youtube.com/@TypicalGamer'},
+  {n:'Bay Area Buggs',u:'BayAreaBuggs',g:'GTA V',c:'variety',v:0,t:'RP Server Drama Recap',sub:'3.1M',link:'https://www.youtube.com/@BayAreaBuggs'},
+  {n:'DashieGames',u:'DashieGames',g:'Horror',c:'variety',v:0,t:'Resident Evil 9 First Look',sub:'8.7M',link:'https://www.youtube.com/@DashieGames'},
+  {n:'8-BitRyan',u:'8BitRyan',g:'Horror',c:'variety',v:0,t:'Five Nights Marathon',sub:'5.1M',link:'https://www.youtube.com/@8BitRyan'},
+  {n:'MKBHD',u:'mkbhd',g:'Tech',c:'tech',v:0,t:'Best Phone of 2025 Review',sub:'18M',link:'https://www.youtube.com/@mkbhd',boost:true},
+  {n:'Linus Tech Tips',u:'LinusTechTips',g:'Tech',c:'tech',v:0,t:'$50,000 PC Build Challenge',sub:'16M',link:'https://www.youtube.com/@LinusTechTips'},
+  {n:'Veritasium',u:'Veritasium',g:'Tech',c:'tech',v:0,t:'This Will Change Physics',sub:'17M',link:'https://www.youtube.com/@Veritasium'},
+  {n:'MoistCr1TiKaL',u:'penguinz0',g:'Reactions',c:'irl',v:0,t:'Internet Drama Breakdown',sub:'15M',link:'https://www.youtube.com/@penguinz0'},
+  {n:'HasanAbi YT',u:'HasanAbi',g:'Commentary',c:'irl',v:0,t:'Political Commentary Live',sub:'3.2M',link:'https://www.youtube.com/@HasanAbi'},
+  {n:'Ludwig',u:'Ludwig',g:'Variety',c:'variety',v:0,t:'Chess vs Poker Challenge',sub:'4.8M',link:'https://www.youtube.com/@Ludwig'},
+  {n:'Valkyrae',u:'Valkyrae',g:'Variety',c:'variety',v:0,t:'New Game Release First Play',sub:'4.1M',link:'https://www.youtube.com/@Valkyrae',boost:true},
+  {n:'Asmongold TV',u:'AsmongoldTV',g:'Variety',c:'variety',v:0,t:'WoW Reacts to New Patch',sub:'2.9M',link:'https://www.youtube.com/@AsmongoldTV'},
+];
+
+const TT_DATA=[
+  {n:'Zach King',u:'zachking',g:'Comedy / FX',c:'irl',v:0,t:'Magic Trick Compilation',followers:'82M',link:'https://www.tiktok.com/@zachking',boost:true},
+  {n:'Funny Mike',u:'funnymike',g:'Comedy',c:'irl',v:0,t:'Family Prank Goes Wrong',followers:'14M',link:'https://www.tiktok.com/@funnymike'},
+  {n:'Jason Derulo',u:'jasonderulo',g:'Music',c:'irl',v:0,t:'New Song Preview LIVE',followers:'58M',link:'https://www.tiktok.com/@jasonderulo'},
+  {n:'Hank Green',u:'hankgreen1',g:'Education',c:'irl',v:0,t:'Science in 60 Seconds',followers:'8.1M',link:'https://www.tiktok.com/@hankgreen1'},
+  {n:'Adin Ross TT',u:'adinross',g:'Gaming / IRL',c:'irl',v:0,t:'Kick Highlights on TikTok',followers:'12.4M',link:'https://www.tiktok.com/@adinross'},
+  {n:'Logan Paul',u:'loganpaul',g:'Entertainment',c:'irl',v:0,t:'Prime Energy Challenge',followers:'23M',link:'https://www.tiktok.com/@loganpaul'},
+  {n:'Jake Paul',u:'jakepaul',g:'Entertainment',c:'irl',v:0,t:'Next Fight Announcement',followers:'20M',link:'https://www.tiktok.com/@jakepaul'},
+  {n:'David Dobrik',u:'daviddobrik',g:'Variety',c:'irl',v:0,t:'Surprise Party Prank',followers:'28M',link:'https://www.tiktok.com/@daviddobrik'},
+  {n:'Typical Gamer TT',u:'typicalgamer',g:'Gaming',c:'fps',v:0,t:'Fortnite Best Moments',followers:'7.2M',link:'https://www.tiktok.com/@typicalgamer'},
+  {n:'Liza Koshy',u:'lizakoshy',g:'Comedy',c:'irl',v:0,t:'Reaction Comedy Skit',followers:'30M',link:'https://www.tiktok.com/@lizakoshy'},
+  {n:'Alix Earle',u:'alixearle',g:'Lifestyle',c:'irl',v:0,t:'GRWM + Story Time',followers:'11M',link:'https://www.tiktok.com/@alixearle'},
+  {n:'KallMeKris',u:'kallmekris',g:'Comedy',c:'irl',v:0,t:'Character Sketch Comedy',followers:'9.4M',link:'https://www.tiktok.com/@kallmekris'},
+  {n:'Brent Rivera',u:'brentrivera',g:'Entertainment',c:'irl',v:0,t:'Challenge Video',followers:'42M',link:'https://www.tiktok.com/@brentrivera'},
+  {n:'SSSniperWolf',u:'sssniperwolf',g:'Gaming',c:'fps',v:0,t:'Omegle Gaming Reactions',followers:'22M',link:'https://www.tiktok.com/@sssniperwolf',boost:true},
+  {n:'NickMercs TT',u:'nickmercs',g:'FPS Gaming',c:'fps',v:0,t:'Warzone Clip Drops',followers:'5.1M',link:'https://www.tiktok.com/@nickmercs'},
+  {n:'Clix TT',u:'clix',g:'Fortnite',c:'fps',v:0,t:'Ranked Clip of the Week',followers:'8.2M',link:'https://www.tiktok.com/@clix'},
+];
+
+const ACHIEVEMENTS=[
+  {n:'GlitchRex',platform:'twitch',badge:'partner',badgeLabel:'Twitch Partner',av:twitchPfp('ratedepicz'),days:74,q:'Went from 40 avg viewers to Partner in 74 days. The raid system changed everything.'},
+  {n:'SkylaFPS',platform:'twitch',badge:'partner',badgeLabel:'Twitch Partner',av:twitchPfp('shivfps'),days:92,q:'Partner in under 3 months. StreamForge members showed up every single stream.'},
+  {n:'TemmyCreator',platform:'kick',badge:'affiliate',badgeLabel:'Kick Affiliate',av:twitchPfp('tubbo'),days:14,q:'Kicked into affiliate in 14 days flat. The collab matching put me in front of the right audience.'},
+  {n:'CoastalTV',platform:'twitch',badge:'affiliate',badgeLabel:'Twitch Affiliate',av:twitchPfp('philza'),days:11,q:'11 days to affiliate. I had 3 viewers before StreamForge. Now averaging 60+.'},
+  {n:'NightOwlTV',platform:'youtube',badge:'topcat',badgeLabel:'Top Category Rank',av:twitchPfp('otzdarva'),days:30,q:'Ranked #4 in my game category within 30 days of joining. Organic reach exploded.'},
+  {n:'ZaraLive',platform:'tiktok',badge:'income',badgeLabel:'First Brand Deal',av:twitchPfp('jinnytty'),days:45,q:'My first brand deal came through the network. $800 deal — more than a month of promo spend.'},
+  {n:'IronSight',platform:'twitch',badge:'affiliate',badgeLabel:'Twitch Affiliate',av:twitchPfp('beaulo'),days:9,q:'9 days. Fastest affiliate I ever heard of. The raid queue is no joke.'},
+  {n:'PulseGamer',platform:'kick',badge:'topcat',badgeLabel:'Top Category Rank',av:twitchPfp('agent00'),days:21,q:'Ranked top 10 in Sports on Kick. The team cross-promotion is real.'},
+];
+
+const TEAMS=[
+  {n:'Jedidiah',color:'#7c3aed',icon:'JD',desc:'Elite FPS squad for competitive excellence and ranked content creation.',m:['NightStrike','FlashBangKing','SkylaFPS','IronSight','CoastalTV','ZephyrFPS']},
+  {n:'Temmy',color:'#06b6d4',icon:'TM',desc:'Variety content collective known for IRL streams and viral community moments.',m:['TemmyPlays','JaydenIRL','ZaraLive','NightOwlTV','CoastalTV']},
+  {n:'levelUpX',color:'#10b981',icon:'LX',desc:'Sports & esports team dominating FIFA, NBA 2K, Rocket League and beyond.',m:['LevelUpX','PulseGamer','ProdigyPete','CometRise']},
+  {n:'StreamNexus',color:'#f59e0b',icon:'SN',desc:'Multi-platform creator network with verified status and brand deal access.',m:['CrypticGamer','NoirGaming','GlitchRex','IronSight','ZaraLive']},
+];
+
+const REVIEWS=[
+  {n:'Marcus Rivera',h:'@marcusplays_tw',p:'twitch',av:'https://i.pravatar.cc/150?img=3',s:5,t:'StreamForge changed my career. Went from 80 viewers to 1,200 in 3 months. The raid network is legitimately powerful.'},
+  {n:'Sophie Chen',h:'@sophiegames_kick',p:'kick',av:'https://i.pravatar.cc/150?img=47',s:5,t:'Joined Team Temmy — community support is incredible. Discord went from 40 to 800 members through cross-promotion.'},
+  {n:'David Osei',h:'@davidkicks',p:'kick',av:'https://i.pravatar.cc/150?img=11',s:5,t:'Skeptical about paying but results are undeniable. Hit affiliate in 14 days of joining.'},
+  {n:'Aaliyah Brooks',h:'@aaliyahfps',p:'twitch',av:'https://i.pravatar.cc/150?img=44',s:5,t:'Managing Kick and TikTok growth simultaneously — StreamForge was the only thing that helped both at once.'},
+  {n:'Tyler Washington',h:'@tylerb_live',p:'twitch',av:'https://i.pravatar.cc/150?img=15',s:5,t:'The feed rotation is fair. I finally get real exposure instead of being lost in a sea of bigger streamers.'},
+  {n:'Priya Sharma',h:'@priyagames',p:'youtube',av:'https://i.pravatar.cc/150?img=49',s:5,t:'Best investment for my career. The team system gave me credibility that sponsors actually noticed.'},
+  {n:'James Okafor',h:'@jamesokafor_ng',p:'twitch',av:'https://i.pravatar.cc/150?img=17',s:5,t:'Nigerian streamer here. Open to creators worldwide was not just a tagline — genuinely connected me globally.'},
+  {n:'Kezia Nwosu',h:'@keziafps',p:'kick',av:'https://i.pravatar.cc/150?img=48',s:5,t:'Three months in and I got my first brand deal through the network. Elite plan paid for itself 10x over.'},
+  {n:'Caleb Monroe',h:'@calebgaming',p:'youtube',av:'https://i.pravatar.cc/150?img=21',s:5,t:'Collab matchmaking is the best feature. Found three long-term streaming partners within my first week.'},
+  {n:'Jade Li',h:'@jadelivestream',p:'twitch',av:'https://i.pravatar.cc/150?img=46',s:5,t:'Stuck at 50 viewers for a year. After StreamForge I hit 400 concurrent in under 60 days.'},
+  {n:'DeShawn Carter',h:'@deshawnfps',p:'twitch',av:'https://i.pravatar.cc/150?img=25',s:5,t:'The raid queue alone is worth the price. Every time I go live I get raiders within minutes.'},
+  {n:'Nathan Park',h:'@nathanpark_gg',p:'twitch',av:'https://i.pravatar.cc/150?img=29',s:5,t:'Hit Partner within 8 months. The coaching sessions in the Pro plan were genuinely game changing.'},
+  {n:'Amara Diallo',h:'@amaradiallo',p:'kick',av:'https://i.pravatar.cc/150?img=43',s:5,t:'The Verified badge opened brand deal conversations I never could have had before.'},
+  {n:'Bianca Torres',h:'@biancalive',p:'tiktok',av:'https://i.pravatar.cc/150?img=41',s:5,t:'TikTok to Twitch pipeline was a dream before StreamForge. Now I convert 200+ followers monthly.'},
+];
+
+const NOTIFS=[
+  {i:'📈',t:'Marcus gained +34 followers tonight',c:'#7c3aed'},
+  {i:'👁',t:'CoastalTV hit 380 live viewers',c:'#06b6d4'},
+  {i:'⚡',t:'TemmyPlays boosted their stream',c:'#f59e0b'},
+  {i:'✅',t:'SkylaFPS achieved Twitch Partner',c:'#22c55e'},
+  {i:'🚀',t:'GlitchRex earned Verified status',c:'#9147ff'},
+  {i:'💬',t:'NightOwlTV received 890 chat messages',c:'#a78bfa'},
+  {i:'🎮',t:'IronSight hit affiliate in 9 days',c:'#53fc18'},
+  {i:'🏆',t:'ZaraLive ranked Top 5 in IRL feed',c:'#f59e0b'},
+  {i:'💰',t:'PulseGamer landed first brand deal',c:'#ec4899'},
+  {i:'🌍',t:'New streamer from Nigeria joined',c:'#7c3aed'},
+];
+
+let twitchCat='all',kickCat='all',ytCat='all';
+let twitchShown=16,kickShown=16,ytShown=16,ttShown=16;
+let selectedGoals=new Set();
+
+const achColors={partner:'#7c3aed',affiliate:'#22c55e',topcat:'#f59e0b',income:'#ec4899'};
+
+function renderAchievements(){
+  document.getElementById('achGrid').innerHTML=ACHIEVEMENTS.map(a=>`
+    <div class="glass ach-card">
+      <div class="ach-header">
+        <img class="ach-av" src="${a.av}" alt="${a.n}" onerror="this.src='${fallbackAv(a.n)}'">
+        <div class="ach-info">
+          <h4>${a.n}</h4>
+          <p>${a.platform.charAt(0).toUpperCase()+a.platform.slice(1)} Streamer</p>
+        </div>
+      </div>
+      <div class="ach-badge ach-${a.badge}">✦ ${a.badgeLabel}</div>
+      <div class="ach-days">⏱ Achieved in ${a.days} days after joining</div>
+      <div class="ach-quote">"${a.q}"</div>
+    </div>`).join('');
+}
+
+function makeCard(s,plat){
+  let chanUrl='#',pfpUrl='';
+  const bg=plat==='twitch'?'linear-gradient(135deg,#1a0a3e,#0d0d26)':
+    plat==='kick'?'linear-gradient(135deg,#0a1a0a,#0d1a0d)':
+    plat==='youtube'?'linear-gradient(135deg,#1a0a0a,#261010)':'linear-gradient(135deg,#1a0010,#1a000a)';
+  if(plat==='twitch'){chanUrl=`https://www.twitch.tv/${s.u}`;pfpUrl=twitchPfp(s.u);}
+  else if(plat==='kick'){chanUrl=`https://kick.com/${s.u}`;pfpUrl=`https://kick.com/api/v1/channels/${s.u}/thumbnail`;}
+  else if(plat==='youtube'){chanUrl=s.link||`https://www.youtube.com/@${s.u}`;pfpUrl=`https://yt3.googleusercontent.com/ytc/${s.u}-profile`;}
+  else if(plat==='tiktok'){chanUrl=s.link||`https://www.tiktok.com/@${s.u}`;pfpUrl=`https://p16-sign-va.tiktokcdn.com/obj/${s.u}_profile`;}
+  const pb=plat==='twitch'?'pt':plat==='kick'?'pk':plat==='youtube'?'py':'ptt';
+  const pn=plat==='twitch'?'Twitch':plat==='kick'?'Kick':plat==='youtube'?'YouTube':'TikTok';
+  const vi=s.v>0?`👁 ${s.v.toLocaleString()} viewers`:(s.sub?`👥 ${s.sub} subs`:s.followers?`👥 ${s.followers}`:'-');
+  const fb=fallbackAv(s.n);
+  return`<a href="${chanUrl}" target="_blank" class="glass sc">
+    ${s.boost?'<div class="boostbdg">⚡ BOOSTED</div>':''}
+    <div class="sc-head">
+      <img class="av" src="${pfpUrl}" alt="${s.n}" onerror="this.onerror=null;this.src='${fb}'">
+      <div class="sc-info"><h3>${s.n}</h3><p>${s.g}</p></div>
+      <span class="pbadge ${pb}">${pn}</span>
+    </div>
+    <div class="sthumb" style="background:${bg}">
+      <div class="sthumb-play">▶</div>
+      <div class="sthumb-title">${s.t}</div>
+    </div>
+    <div class="smeta">
+      <div class="vcount">${vi}</div>
+      <div class="livebdg">LIVE</div>
+    </div>
+    <div class="visit-btn">Visit Channel →</div>
+  </a>`;
+}
+
+function renderTwitch(){
+  const f=TWITCH_DATA.filter(s=>twitchCat==='all'||s.c===twitchCat);
+  document.getElementById('twitchGrid').innerHTML=f.slice(0,twitchShown).map(s=>makeCard(s,'twitch')).join('');
+}
+function filterTwitch(c,btn){twitchCat=c;twitchShown=16;document.querySelectorAll('#twitch-cats .cbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderTwitch();}
+function loadMoreTwitch(){twitchShown+=12;renderTwitch();}
+
+function renderKick(){
+  const f=KICK_DATA.filter(s=>kickCat==='all'||s.c===kickCat);
+  document.getElementById('kickGrid').innerHTML=f.slice(0,kickShown).map(s=>makeCard(s,'kick')).join('');
+}
+function filterKick(c,btn){kickCat=c;kickShown=16;document.querySelectorAll('#kick-cats .cbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderKick();}
+function loadMoreKick(){kickShown+=12;renderKick();}
+
+function renderYT(){
+  const f=YT_DATA.filter(s=>ytCat==='all'||s.c===ytCat);
+  document.getElementById('ytGrid').innerHTML=f.slice(0,ytShown).map(s=>makeCard(s,'youtube')).join('');
+}
+function filterYT(c,btn){ytCat=c;ytShown=16;document.querySelectorAll('#yt-cats .cbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderYT();}
+function loadMoreYT(){ytShown+=12;renderYT();}
+
+let ttShown2=16;
+function renderTT(){document.getElementById('tiktokGrid').innerHTML=TT_DATA.slice(0,ttShown2).map(s=>makeCard(s,'tiktok')).join('');}
+function loadMoreTT(){ttShown2+=12;renderTT();}
+
+function renderTeams(){
+  document.getElementById('teamsGrid').innerHTML=TEAMS.map(t=>`
+    <div class="glass tc">
+      <div class="tlogo" style="background:${t.color}1a;border:2px solid ${t.color}44;color:${t.color}">${t.icon}</div>
+      <h3>${t.n}</h3><div class="tc-desc">${t.desc}</div>
+      <div class="chips">${t.m.map(m=>`<span class="chip">${m}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+function renderReviews(){
+  const pColors={twitch:'#9147ff',kick:'#53fc18',youtube:'#ff4444',tiktok:'#ff0050'};
+  const pNames={twitch:'Twitch',kick:'Kick',youtube:'YouTube',tiktok:'TikTok'};
+  const html=REVIEWS.map(r=>`
+    <div class="glass rc">
+      <div style="display:inline-block;background:${pColors[r.p]}22;color:${pColors[r.p]};border:1px solid ${pColors[r.p]}44;font-size:.6rem;font-weight:800;padding:.1rem .38rem;border-radius:4px;margin-bottom:.35rem">${pNames[r.p]}</div>
+      <div class="rc-head">
+        <img class="rc-av" src="${r.av}" alt="${r.n}" onerror="this.src='${fallbackAv(r.n)}'">
+        <div><div class="rc-name">${r.n}</div><div class="rc-hdl">${r.h}</div></div>
+      </div>
+      <div class="stars">${'★'.repeat(r.s)}</div>
+      <div class="rc-txt">${r.t}</div>
+    </div>`).join('');
+  document.getElementById('reviewsInner').innerHTML=html+html;
+}
+
+function toggleGoal(card,type){
+  card.classList.toggle('sel');
+  if(card.classList.contains('sel'))selectedGoals.add(type);else selectedGoals.delete(type);
+  const msgs={
+    partner:'You\'re aiming for Partner — our members reach Partner milestones 3× faster with coordinated raids and coaching.',
+    affiliate:'14 days to affiliate is our average. StreamForge\'s raid network gets you to 3 avg viewers, 7 broadcast days, and 500 minutes fast.',
+    rank:'Dominating your category requires consistent viewership signals. Our members push each other up the discovery feed through coordinated watch events.',
+    income:'Turn streaming into real income — subs, bits, brand deals. Elite & Pro plans include brand deal introductions and monetization coaching.',
+    fun:'Even casual streamers deserve a real, engaged audience. Join a community that actually shows up and keeps chat alive.',
+    promo:'Still paying a promoter? One-time shoutouts don\'t build real viewers. StreamForge gives you a permanent raid network that shows up every stream.',
+  };
+  if(selectedGoals.size>0){
+    document.getElementById('goalMsg').textContent=msgs[[...selectedGoals][0]]||'';
+    document.getElementById('goalCta').classList.add('show');
+  }else{document.getElementById('goalCta').classList.remove('show');}
+}
+
+function toggleGC(el){
+  el.classList.toggle('ch');
+  el.querySelector('.gc-check').textContent=el.classList.contains('ch')?'✓':'';
+}
+
+function openDiscordModal(){document.getElementById('discordModal').classList.add('open');document.body.style.overflow='hidden';}
+function closeModal(){document.getElementById('discordModal').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('discordModal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+function submitApp(){
+  const n=document.getElementById('appName').value,e=document.getElementById('appEmail').value;
+  if(!n||!e){alert('Please fill in your streamer name and email.');return;}
+  document.getElementById('appForm').style.display='none';
+  document.getElementById('appSuccess').style.display='block';
+}
+
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  const isLight=document.body.classList.contains('light');
+  document.getElementById('toggleThumb').textContent=isLight?'☀️':'🌙';
+  document.getElementById('toggleLabel').textContent=isLight?'Light':'Dark';
+}
+
+function dismissIntro(){document.getElementById('intro').classList.add('dismissed');}
+setTimeout(()=>{
+  const fill=document.querySelector('.intro-fill');
+  if(fill)fill.style.width='100%';
+  setTimeout(dismissIntro,3600);
+},100);
+
+function animateBars(){
+  const bars=[{id:'b1',w:94},{id:'b2',w:87},{id:'b3',w:78},{id:'b4',w:91}];
+  bars.forEach((b,i)=>setTimeout(()=>{const el=document.getElementById(b.id);if(el)el.style.width=b.w+'%';},i*200));
+}
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){animateBars();obs.disconnect();}});},{threshold:.3});
+const dash=document.querySelector('.dashboard');
+if(dash)obs.observe(dash);
+
+function showNotif(){
+  const n=NOTIFS[Math.floor(Math.random()*NOTIFS.length)];
+  const box=document.getElementById('notifications');
+  const el=document.createElement('div');
+  el.className='notif';
+  el.innerHTML=`<div class="ni" style="background:${n.c}1a;color:${n.c}">${n.i}</div><span style="color:#94a3b8;font-size:.75rem">${n.t}</span>`;
+  box.appendChild(el);
+  if(box.children.length>3)box.removeChild(box.firstChild);
+  setTimeout(()=>{el.classList.add('fade');setTimeout(()=>el.remove(),500)},4500);
+}
+
+renderAchievements();renderTwitch();renderKick();renderYT();renderTT();renderTeams();renderReviews();
+showNotif();setInterval(showNotif,7000);
+</script>
+</body>
+</html>
