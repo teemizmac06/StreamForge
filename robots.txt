@@ -1,0 +1,80 @@
+# StreamForge — robots.txt
+# Generated: 2026-05-04
+
+User-agent: *
+Allow: /
+Allow: /community
+Allow: /community/
+Allow: /blog/
+Allow: /team/
+Allow: /sitemap.xml
+
+# Block private/admin paths (update these when you have a backend)
+Disallow: /admin/
+Disallow: /api/private/
+Disallow: /dashboard/
+Disallow: /*.json$
+Disallow: /cdn-cgi/
+
+# Sitemap location — submitted to Google, Bing, Yahoo
+Sitemap: https://streamforge.gg/sitemap.xml
+
+# ── AI Crawlers — ALLOW all major AI training bots ──
+# This makes ChatGPT, Gemini, Claude, Perplexity, Grok read StreamForge
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Googlebot-News
+Allow: /community
+Allow: /blog/
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: YouBot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
