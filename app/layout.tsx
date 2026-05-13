@@ -64,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <p className="text-xs" style={{color:'var(--txt3)'}}>contact.streamforge@gmail.com</p>
           </div>
         </footer>
+      <script src="https://widget.trustmary.com/HsiONmUN8S"></script>
       </body>
     </html>
   )
