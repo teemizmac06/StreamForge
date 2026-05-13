@@ -30,6 +30,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           "url":"https://streamforge.gg","email":"contact.streamforge@gmail.com",
           "description":"Active viewer network helping streamers grow on Twitch, Kick, YouTube and TikTok.",
         })}} />
+        <script>(function (w,d,s,o,r,js,fjs) {
+    w[r]=w[r]||function() {(w[r].q = w[r].q || []).push(arguments)}
+    w[r]('app', '2taKwyTXo3');
+    if(d.getElementById(o)) return;
+    js = d.createElement(s), fjs = d.getElementsByTagName(s)[0];
+    js.id = o; js.src = 'https://embed.trustmary.com/embed.js';
+    js.async = 1; fjs.parentNode.insertBefore(js, fjs);
+  }(window, document, 'script', 'trustmary-embed', 'tmary'));
+</script>
       </head>
       <body style={{ fontFamily:"'Plus Jakarta Sans',system-ui,sans-serif" }}>
         <Navbar />
@@ -64,7 +73,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <p className="text-xs" style={{color:'var(--txt3)'}}>contact.streamforge@gmail.com</p>
           </div>
         </footer>
-      <script src="https://widget.trustmary.com/HsiONmUN8S"></script>
+      <script src="https://widget.trustmary.com/VxXPRUz_3"></script>
       </body>
     </html>
   )
