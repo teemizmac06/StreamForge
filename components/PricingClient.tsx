@@ -5,7 +5,7 @@ import Link from 'next/link'
 /* ── Dodo Payment Links ── */
 const DODO = {
   Starter:  'https://flutterwave.com/pay/vknmccjimzyd',
-  Standard: 'https://flutterwave.com/pay/strandard',
+  Standard: '',
   Premium:  'https://checkout.dodopayments.com/buy/pdt_0NfB11ufsZtof47YiaFug?quantity=1',
 }
 
