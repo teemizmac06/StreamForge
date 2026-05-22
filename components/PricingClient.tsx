@@ -5,8 +5,8 @@ import Link from 'next/link'
 /* ── Dodo Payment Links ── */
 const DODO = {
   Starter:  'https://flutterwave.com/pay/vknmccjimzyd',
-  Standard: '',
-  Premium:  'https://checkout.dodopayments.com/buy/pdt_0NfB11ufsZtof47YiaFug?quantity=1',
+  Standard: 'https://flutterwave.com/pay/5jif6jltjw9d',
+  Premium:  'https://flutterwave.com/pay/zlsaqvilg2lq',
 }
 
 interface Feature { yes: boolean; text: string; star?: boolean }
