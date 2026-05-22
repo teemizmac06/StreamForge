@@ -4,8 +4,8 @@ import Link from 'next/link'
 
 /* ── Dodo Payment Links ── */
 const DODO = {
-  Starter:  'https://checkout.dodopayments.com/buy/pdt_0NfAyFcEQeysnKTtiGsRM?quantity=1',
-  Standard: 'https://checkout.dodopayments.com/buy/pdt_0NfB0D6grqzpkYwydOiDd?quantity=1',
+  Starter:  'https://flutterwave.com/pay/vknmccjimzyd',
+  Standard: 'https://flutterwave.com/pay/strandard',
   Premium:  'https://checkout.dodopayments.com/buy/pdt_0NfB11ufsZtof47YiaFug?quantity=1',
 }
 
